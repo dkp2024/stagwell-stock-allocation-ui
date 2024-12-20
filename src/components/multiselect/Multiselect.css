@@ -1,0 +1,34 @@
+.custom-checkbox-label {
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+  }
+  
+  .custom-checkbox-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
+    background-color: #fff;
+  }
+  
+  .custom-checkbox-label::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 10px;
+    height: 10px;
+    background-color: #333;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  #custom-checkbox:checked + .custom-checkbox-label::after {
+    transform: translateY(-50%) scale(1);
+  }
+  
