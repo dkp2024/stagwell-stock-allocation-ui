@@ -116,6 +116,7 @@ export default function Detail() {
                 );
                 if(bonusResponse.ok && !bonusData) {
                   const bonusResult = await bonusResponse.json();
+                  console.log('bonusResult:',bonusResult);
                   setBonusData(bonusResult);
                 }
               } catch (err){

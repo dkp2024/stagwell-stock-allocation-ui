@@ -204,8 +204,8 @@ export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver
               <div className="d-flex justify-content-end g-10">
                 {userType !== NETWORK && (
                     <button
-                      className={`${isCashOver || isStockOver || isCashUnder || isStockUnder || allSubmitted ? "baseBtnDisabled" : "baseBtn"
-                      } d-flex align-items-center justify-content-center`} disabled={isCashOver || isStockOver || isCashUnder || isStockUnder || allSubmitted ? true : false}
+                      className={`${isCashOver || isStockOver || !isCashUnder || !isStockUnder || allSubmitted ? "baseBtnDisabled" : "baseBtn"
+                      } d-flex align-items-center justify-content-center`} disabled={isCashOver || isStockOver || !isCashUnder || !isStockUnder || allSubmitted ? true : false}
                       onClick={() => handleOnSave()}>
                       Submit
                     </button>
