@@ -39,7 +39,7 @@ export default function Login() {
         } else if (response.BAD_REQUEST) {
           return response.json();
         } else {
-          throw new Error('Failed to fetch');
+          throw new Error('Internal Server Error');
         }
       })
       .then(data => {

@@ -53,7 +53,7 @@ const Specialrequest = ({ agencyData }) => {
     });
     if (response?.ok) {
       setSubmitCompleted(true);
-      setTimeout(() => setSubmitCompleted(false), 800);
+     setTimeout(() => setSubmitCompleted(false), 800);
     }
   };
 

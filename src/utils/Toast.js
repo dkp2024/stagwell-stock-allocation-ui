@@ -4,13 +4,14 @@ const Toast = (props) => {
 
     const style={
 
-        textAlign:'center'
+        textAlign:'center',
+        color:'red'
 
     }
     return(
      <>
      <div style={style}>
-        <p>{props.msg}</p>
+        <p>{props.msg=='Failed to fetch'?'Internal Server Error':props.msg}</p>
      </div>
      </>);
 }
