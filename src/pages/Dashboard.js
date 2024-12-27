@@ -63,7 +63,7 @@ const Dashboard = () => {
       const accessToken = oktaAuth.getAccessToken();
       if(isLoggedIn && accessToken) {
         try {
-          const response = await fetch(`${BASE_LOCAL_URL}entity/list?sessionEmail=contact@raynasys.com'&sessionUserId=101`,{
+          const response = await fetch(`${BASE_LOCAL_URL}entity/list`,{
              headers: {
             'Authorization': `Bearer ${accessToken}`,  
             'Content-Type': 'application/json'
