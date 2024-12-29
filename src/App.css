@@ -45,8 +45,9 @@ a {text-decoration: none;}
 .showcaseWrap {margin-bottom: 50px;}
 .customSortHead{position: relative; display: flex; height: 50px;align-items: center; font-size: 16px; font-weight: 700;line-height: 21px;letter-spacing: 0.14px;text-align: left;gap:3px;padding: 0 15px;text-transform: uppercase;color: #fff;}
 .customTableBody {display: flex; height: 48px;align-items: center; font-size: 16px; font-weight: 500;line-height: 21px;letter-spacing: 0.14px;text-align: left;gap:3px;padding: 0 15px;}
-.statusChip {height:29px;border-radius: 16px; background-color:#61CC65;color:var(--white);font-size: 12px;padding: 10px;margin-left:50px;}
+.statusChip {height:29px;border-radius: 16px; background-color:#61CC65;color:var(--white);font-size: 12px;padding: 10px;margin-left:auto;}
 .textHiglight { color: var(--primary);}
+.cursorPointer {cursor: pointer;}
 .lastItem {top:3px;}
 .baseBtn {height: 45px; background: #FFB100; color: var(--footerBg); font-size: 18px;font-weight: 700;line-height: 21px; letter-spacing: 0.14px;min-width: 160px; border-radius: 31px;border:none;}
 .btnNext {background: var(--colorBase); color: var(--white);}
@@ -96,6 +97,7 @@ a {text-decoration: none;}
 .dashboardTable thead th, .dashboardTable tbody td  {width:200px; min-width:200px;}
 .userHead {background: #1584a6 !important}
 .uName{color: var(--footerBg);}
+.errorWrap{position: absolute;top:20px;right:15px;}
 
 .resTable          { overflow: auto; max-height: 500px; }
 .resTable thead th { position: sticky; top: 0; z-index: 3; }
@@ -308,6 +310,29 @@ th     { background:#eee; }
     animation-delay: 2.5s;
   }
 
+  /* slide error */
+  .error-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+  }
+  
+  .slide-in {
+    transform: translateX(0);
+  }
+  
+  .slide-out {
+    transform: translateX(100%);
+  }
+  
+.customPadding{padding-right: 120px; padding-left: 120px;}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+}
 
 /* Responsiive */
 @media only screen and (max-width: 320px) and (max-width: 400px)  {
@@ -315,6 +340,7 @@ th     { background:#eee; }
         min-width: 180px;
         width: 180px;
     }
+    .customPadding{padding: 0px 20px;}
 }
 @media only screen and (max-width: 767px) {
     .btnXs {min-width: 100% !important;}
@@ -338,17 +364,28 @@ th     { background:#eee; }
     .messageBox { padding: 30px 15px;}
     .twoBtnSec .baseBtn {font-size: 14px;}
     .mdashTitle {flex-direction: column; gap:8px;}
+    .customPadding{padding: 0px 10px;}
 }
 
 @media only screen and (min-width: 481px) and (max-width: 767px) {
     .tileWrap .tileHeader h6 {font-size: 12px;}
     .mTitleBtm {width: auto;}
+    .customPadding{padding: 0px 50px;}
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {}
 @media only screen and (min-width: 992px) and (max-width: 1200px) {}
 @media only screen and (min-width: 1201px) and (max-width: 1400px) {}
 
 
+/* Hide the spinner controls for number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
 
 
 

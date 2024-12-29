@@ -12,6 +12,7 @@ import { OktaAuth } from '@okta/okta-auth-js';
 import { Security, LoginCallback,SecureRoute } from '@okta/okta-react';
 import { oktaConfig } from './oktaConfig';
 import ProtectedRoute from './ProtectedRoute ';
+//require('dotenv').config()
 
 const oktaAuth = new OktaAuth(oktaConfig);
 function App() {

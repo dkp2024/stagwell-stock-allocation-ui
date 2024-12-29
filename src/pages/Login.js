@@ -9,8 +9,12 @@ import Loader from "../components/Loader";
 import Toast from "../utils/Toast";
 import { sessionStorageGet } from "../utils/storageHelper";
 import { useOktaAuth } from '@okta/okta-react';
+
 //import { Navigate } from 'react-router-dom';
+
 export default function Login() {
+  const apiUrl = process.env;
+ console.log("API URL: ", apiUrl); 
   const { oktaAuth, authState } = useOktaAuth();
   const login = async () => oktaAuth.signInWithRedirect();
   const navigate = useNavigate();

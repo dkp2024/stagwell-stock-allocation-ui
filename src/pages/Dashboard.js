@@ -11,14 +11,19 @@ import { useOktaAuth } from '@okta/okta-react';
 
 
 const Dashboardrow = ({ data, onRowClick }) => {
-  
-  const navigate = useNavigate();
   // const rowData = location.state.rowData;
+
+  const formatDollars = (amount) => {
+    const formattedAmount = amount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return formattedAmount ? `$${formattedAmount}` : null;
+  };
 
   return (
     <>
     {data.map(item => (
-      <tr key={item.id} onClick={() => onRowClick(item)} >
+      <tr key={item.id} 
+        // onClick={() => onRowClick(item)} 
+      >
         <td>
           <div className='customTableBody textHiglight'>{item.agencyName}</div>
         </td>
@@ -28,8 +33,7 @@ const Dashboardrow = ({ data, onRowClick }) => {
         <td>
           <div className='customTableBody'>
             <div className='d-flex align-items-center'>
-              <span>$</span>
-              <span>{item.amountForCash}</span>
+              <span>{formatDollars(item.amountForCash)}</span>
               {/* <input type="text" className="form-control" value={item.amountForCash} /> */}
             </div>
           </div>
@@ -37,11 +41,10 @@ const Dashboardrow = ({ data, onRowClick }) => {
         <td>
           <div className='customTableBody'>
             <div className='d-flex align-items-center'>
-              <span>$</span>
-              <span>{item.amountForStock}</span>
+              <span>{formatDollars(item.amountForStock)}</span>
               {/* <input type="text" className="form-control" value={item.amountForStock} /> */}
             </div>
-            {item.status ? <span className='statusChip d-flex align-items-center'>{item.status}</span> : ''}
+            {item.submitted ? <span className='statusChip d-flex align-items-center'>{item.currentStage ? item.currentStage : 'Stage 2'}</span> : ''}
           </div>
         </td>
       </tr>
@@ -49,7 +52,6 @@ const Dashboardrow = ({ data, onRowClick }) => {
   </>
   )
 }
-
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -106,40 +108,49 @@ const Dashboard = () => {
 
   return (
     <div className='mainWrap'>
-      <div className="container InfoSec">
+    <div className="container InfoSec">
 
-        <div className='bonusSec'>
-          <div className="row">
-            <div className="col">
-              <div className='d-flex align-items-center justify-content-between mb-3 mdashTitle'>
-                <h4 className='displayTitle'>Dashboard</h4>
-                {/* <button className='d-flex align-items-center justify-content-center g-15 btnOutlined mTitleBtm'><img src={filter} alt="" /> Filter</button> */}
+      <div className='bonusSec'>
+        <div className="row">
+          <div className="col">
+            <div className='d-flex align-items-center justify-content-between mb-3 mdashTitle'>
+              <h4 className='displayTitle'>Dashboard</h4>
+              {/* <button className='d-flex align-items-center justify-content-center g-15 btnOutlined mTitleBtm'><img src={filter} alt="" /> Filter</button> */}
+            </div>
+
+
+            <div className='tableWrap'>
+              <div className='table-responsive'>
+                <table className="table tableBase dashboardTable">
+                  <thead>
+                    <tr>
+                      <th scope="col" ><div className='customSortHead'>AGENCY <img src={sortWhite} alt="" /></div></th>
+                      <th scope="col" ><div className='customSortHead'>ENTITY <img src={sortWhite} alt="" /></div></th>
+                      <th scope="col" ><div className='customSortHead'>CASH <img src={sortWhite} alt="" /></div></th>
+                      <th scope="col" ><div className='customSortHead'>STOCK <img src={sortWhite} alt="" /></div></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <Dashboardrow data={data} onRowClick={handleRowClick} />
+                  </tbody>
+                </table>
               </div>
-
-
-              <div className='tableWrap'>
-                <div className='table-responsive'>
-                  <table className="table tableBase dashboardTable">
-                    <thead>
-                      <tr>
-                        <th scope="col" ><div className='customSortHead'>AGENCY <img src={sortWhite} alt="" /></div></th>
-                        <th scope="col" ><div className='customSortHead'>ENTITY <img src={sortWhite} alt="" /></div></th>
-                        <th scope="col" ><div className='customSortHead'>CASH <img src={sortWhite} alt="" /></div></th>
-                        <th scope="col" ><div className='customSortHead'>STOCK <img src={sortWhite} alt="" /></div></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <Dashboardrow data={data} onRowClick={handleRowClick} />
-                    </tbody>
-                  </table>
-                </div>
+            </div>
+            <div className="d-flex justify-content-end mb-5 mt-3 g-10 w-100">
+              <div className="d-flex justify-content-end g-10">
+                <button
+                  className="baseBtn baseBtn d-flex align-items-center justify-content-center p-3"
+                  onClick={() => handleRowClick(data)}
+                >
+                  View Employee Allocation Details
+                </button>
               </div>
-
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   )
 }
 
