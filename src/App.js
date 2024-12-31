@@ -46,8 +46,6 @@ function App() {
           return LayoutWithHeader(<History />)
       case "detail":
             return LayoutWithHeader(<Detail />)
-      case "dummy":
-            return LayoutWithHeader(<DetailDummy />)
       default:
         return <div>Component not found</div>
     }
@@ -61,7 +59,6 @@ function App() {
           <Route  exact path="/dashboard"  element={<ProtectedRoute component={<Layout component="dashboard" />} />} />
           <Route  exact path="/history" element={<ProtectedRoute component={<Layout component="history" />} />} />
           <Route  exact path="/detail"  element={<ProtectedRoute component={<Layout component="detail" />} />} />
-          <Route  exact path="/dummy" element={<ProtectedRoute component={<Layout component="dummy" />} />} />
           <Route path="/login/callback" element={<LoginCallback />} />
           <Route path="*"  element={<Layout component="login" />} />
         </Routes>

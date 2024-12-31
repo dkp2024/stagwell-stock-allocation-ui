@@ -10,4 +10,4 @@ export const sessionStorageGet = async (key) => {
 export const sessionStorageRemove = (key) =>
   sessionStorage.removeItem(key);
 
-export const sessionStorageClear = async () => sessionStorage.clear();
+export const sessionStorageClear = () => sessionStorage.clear();

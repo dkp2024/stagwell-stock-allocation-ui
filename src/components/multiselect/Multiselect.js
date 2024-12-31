@@ -56,13 +56,13 @@ const InputOption = ({
 };
 
 
-const Multiselect = ({ placeholder, allOptions, onOptionsChange, defaultSelectedOptions }) => {
+const Multiselect = ({ placeholder, allOptions, onOptionsChange, defaultSelectedOptions, isSingleSelect }) => {
   const [selectedOptions, setSelectedOptions] = useState(defaultSelectedOptions);
 
     // Handler for when options change
   const handleOptionsChange = (options) => {
     setSelectedOptions(options);
-    onOptionsChange(options.map((opt) => opt.value)); // Pass selected options to parent
+    isSingleSelect ? onOptionsChange(options.value) : onOptionsChange(options.map((opt) => opt.value)); // Pass selected options to parent
   };
 
 
@@ -70,7 +70,7 @@ const Multiselect = ({ placeholder, allOptions, onOptionsChange, defaultSelected
     <>
       <Select
         defaultValue={selectedOptions} // Set the default selected options
-        isMulti
+        isMulti={isSingleSelect ? false: true}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         placeholder={placeholder}

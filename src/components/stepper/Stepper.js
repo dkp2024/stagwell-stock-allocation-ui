@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Stepper.css";
 import { useSection } from "../../utils/SectionContext";
-import { ENTITY, STEP } from "../../_constants/constants";
+import { AGENCY, ENTITY, NETWORK, STAGWELL, STEP } from "../../_constants/constants";
 import defaultRing from "../../images/defaultRing.svg";
 import activeRing from "../../images/activeRing.svg";
 import { sessionStorageGet } from "../../utils/storageHelper";
@@ -21,19 +21,17 @@ export default function Stepper() {
 
   const handleStepperClick = async (section) => {
     const userType = await sessionStorageGet('userType')
-    if (section === STEP.STEPONE) {
-      if (activeSection === "Steptwo" && userType != ENTITY) {
-        showSection('Stepone')
-      }
-    } else if (section === STEP.STEPTWO) {
-      if (activeSection === "Stepthree") {
-        console.log("navigate two");
-      }
-    } else if (section === STEP.STEPTHREE) {
-      if (activeSection === "Stepfour") {
-        console.log("navigate three");
-      }
-    } 
+    if (userType === ENTITY) return
+    if ((userType === STAGWELL || userType === NETWORK) && (section === STEP.STEPONE || section === STEP.STEPTHREE)) return
+    if ((userType === STAGWELL || userType === NETWORK) && section === STEP.STEPTWO) {
+      (activeSection === "Stepfour" || activeSection === "Stepfive") && showSection('Steptwo')
+    }
+    if ((userType === STAGWELL || userType === NETWORK) && section === STEP.STEPFOUR) {
+      (activeSection === "Stepfive") && showSection('Stepfour')
+    }
+    if (userType === AGENCY && activeSection === "Stepone") return
+    if (userType === AGENCY && (activeSection === "Steptwo" || activeSection === "Stepthree") && section === STEP.STEPONE) showSection('Stepone')
+    if (userType === AGENCY && activeSection === "Stepthree" && section === STEP.STEPTWO) showSection('Steptwo')
   };
 
   return (

@@ -6,10 +6,9 @@ import Success from "../pages/Success";
 import budget from "../images/budget.svg";
 import cash from "../images/cash.svg";
 import stock from "../images/stock.svg";
-import { useOktaAuth } from '@okta/okta-react';
 
 import { useSection } from "../utils/SectionContext";
-
+import { useOktaAuth } from '@okta/okta-react';
 const SpecialRequestObject = {
   additionalCashBonusRequest: "",
   additionalStockBonusRequest: "",
@@ -18,11 +17,12 @@ const SpecialRequestObject = {
   jobTitle: "",
 };
 
-const Specialrequest = ({ agencyData }) => {
+const Specialrequest = ({ agencyData, formatDollars }) => {
+  const { oktaAuth, authState } = useOktaAuth();
   const { showSection } = useSection();
   const [formData, setFormData] = useState({ ...SpecialRequestObject });
   const [isSubmitCompleted, setSubmitCompleted] = useState(false);
-  const { oktaAuth, authState } = useOktaAuth();
+
   const handleChange = (event) =>
     setFormData((state) => ({
       ...state,
@@ -44,16 +44,17 @@ const Specialrequest = ({ agencyData }) => {
       updatedDate: "2019-01-06T18:30:00.000+00:00",
     });
     const response = await fetch(`${BASE_LOCAL_URL}sr/save`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,  
+        'Content-Type': 'application/json'
+      },
       credentials: "include",
       method: "post",
-      body: specialRequestBody,
-      headers: { 
-        'Authorization': `Bearer ${accessToken}`,  
-        "Content-Type": "application/json" },
+      body: specialRequestBody
     });
     if (response?.ok) {
       setSubmitCompleted(true);
-     setTimeout(() => setSubmitCompleted(false), 800);
+      setTimeout(() => setSubmitCompleted(false), 800);
     }
   };
 
@@ -71,7 +72,7 @@ const Specialrequest = ({ agencyData }) => {
                 <img src={budget} alt="" />
                 <div className="tileTxt">
                   <h6>Overall Bonus Pool Budget:</h6>
-                  <h2>{agencyData.overallBonusPoolBudget}</h2>
+                  <h2>{formatDollars(agencyData.overallBonusPoolBudget)}</h2>
                 </div>
               </div>
             </div>
@@ -82,7 +83,7 @@ const Specialrequest = ({ agencyData }) => {
                 <img src={cash} alt="" />
                 <div className="tileTxt">
                   <h6>Amount allocated to Cash:</h6>
-                  <h2>{agencyData.amountForCash}</h2>
+                  <h2>{formatDollars(agencyData.amountForCash)}</h2>
                 </div>
               </div>
             </div>
@@ -93,7 +94,7 @@ const Specialrequest = ({ agencyData }) => {
                 <img src={stock} alt="" />
                 <div className="tileTxt">
                   <h6>Amount allocated to Stock:</h6>
-                  <h2>{agencyData.amountForStock}</h2>
+                  <h2>{formatDollars(agencyData.amountForStock)}</h2>
                 </div>
               </div>
             </div>

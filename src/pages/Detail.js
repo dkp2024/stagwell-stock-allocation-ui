@@ -7,10 +7,11 @@ import Stepthree from "../components/Stepthree";
 import Stepfour from "../components/Stepfour";
 import { useSection } from "../utils/SectionContext";
 import Specialrequest from "../components/Specialrequest";
-import { AGENCY, BASE_LOCAL_URL } from "../_constants/constants";
+import { AGENCY, BASE_LOCAL_URL , ENTITY, LOGIN_ROUTE, NETWORK, STAGWELL} from "../_constants/constants";
 import { sessionStorageGet } from "../utils/storageHelper";
 import Stepfive from "../components/Stepfive";
 import { useOktaAuth } from '@okta/okta-react';
+
 export default function Detail() {
   const { activeSection, showSection } = useSection();
   const [agencyData, setAgencyData] =useState();
@@ -22,6 +23,7 @@ export default function Detail() {
   const cashAvailable = bonusData?.reduce((total, entity) => total + entity.amountForCash, 0);
   const stockAvailable = bonusData?.reduce((total, entity) => total + entity.amountForStock, 0);
   const [cashRemaining, setCashRemaining] = useState();
+  const [userType, setUserType] = useState("")
   const [stockRemaining, setTotalStockAvailable] = useState();
   const location = useLocation();
   const rowData = location.state && location.state.rowData;
@@ -29,23 +31,22 @@ export default function Detail() {
   const { oktaAuth, authState } = useOktaAuth();
 
   useEffect(() => {
-    const accessToken = oktaAuth.getAccessToken();
       const fetchData = async () => {
+        const accessToken = oktaAuth.getAccessToken();
         const isLoggedIn = await sessionStorageGet('isLoggedIn')
         const userType = await sessionStorageGet('userType')
+        setUserType(userType)
         if (isLoggedIn) {
           try {
             const response = await fetch(
               `${BASE_LOCAL_URL}agency/list`,
-             
-              {
+              { 
                 headers: {
                   'Authorization': `Bearer ${accessToken}`,  
                   'Content-Type': 'application/json'
                 },
-                
-                credentials: "include"
-               }
+                credentials: "include" 
+              }
             );
             if (!response.ok) {
               throw new Error("Network response was not ok");
@@ -54,7 +55,7 @@ export default function Detail() {
               const result = await response.json();
               if (userType === AGENCY) {
                 setAgencyData(result[0]);
-              } else {
+              } else if (userType !== ENTITY) {
                 const uniqueDataResult = Array.from(new Map(result.map(item => [item.agencyId, item])).values());
                 const uniqueData = Object.values(
                   uniqueDataResult.reduce((accumulator, current) => {
@@ -111,13 +112,13 @@ export default function Detail() {
                       'Authorization': `Bearer ${accessToken}`,  
                       'Content-Type': 'application/json'
                     },
-                    credentials: "include" 
-                  }
+                    credentials: "include"
+                   }
                 );
                 if(bonusResponse.ok && !bonusData) {
                   const bonusResult = await bonusResponse.json();
-                  console.log('bonusResult:',bonusResult);
                   setBonusData(bonusResult);
+                  if (userType === ENTITY) setAgencyData(bonusResult[0])
                 }
               } catch (err){
                 console.log(err)
@@ -127,7 +128,7 @@ export default function Detail() {
             console.log(error);
           }
         } else {
-          window.location.href = '/'
+          navigate(LOGIN_ROUTE, {replace: true})
         }
       };
       fetchData();
@@ -163,6 +164,7 @@ export default function Detail() {
   const handleOnSave = async() => {
     const accessToken = oktaAuth.getAccessToken();
     const userType = await sessionStorageGet('userType')
+    setUserType(userType)
     let updatedData = [];
     if(userType === AGENCY) {
       //showSection("Steptwo")
@@ -177,7 +179,6 @@ export default function Detail() {
         headers: {
           'Authorization': `Bearer ${accessToken}`,  
           "Content-Type": "application/json",
-          
         },
         credentials: "include", 
         body: JSON.stringify(updatedData),
@@ -191,6 +192,32 @@ export default function Detail() {
       console.log(error);
     }
   }
+  const formatDollars = (amount) => {
+    const formattedAmount = amount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return formattedAmount ? `$${formattedAmount}` : null;
+  };
+
+  const handleOnSaveApi = async() => {
+    const accessToken = oktaAuth.getAccessToken();
+    try {
+      const bonusResponse = await fetch(
+        `${BASE_LOCAL_URL}entity/list`,
+        { 
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,  
+            'Content-Type': 'application/json'
+          },
+          credentials: "include" }
+      );
+      if(bonusResponse.ok) {
+        const bonusResult = await bonusResponse.json();
+        setBonusData(bonusResult);
+        if (userType === ENTITY) setAgencyData(bonusResult[0])
+      }
+    } catch (err){
+      console.log(err)
+    }
+  }
 
   return (
     <div className="mainWrap">
@@ -198,8 +225,8 @@ export default function Detail() {
       <div className="stepperWrap">
         <Stepper />
       </div>
-      <div className=" container viewWrap">
-        {activeSection === "Stepone" && (
+      <div className="viewWrap">
+        {activeSection === "Stepone" && userType !== STAGWELL && (
           <Stepone
             agencyData={agencyData}
             bonusData={bonusData}
@@ -209,6 +236,7 @@ export default function Detail() {
             isCashUnder={isCashUnder}
             isStockUnder={isStockUnder}
             handleOnSave={handleOnSave}
+            formatDollars={formatDollars}
           />
         )}
         {activeSection === "Steptwo" && (
@@ -217,15 +245,34 @@ export default function Detail() {
             cashAvailable={cashAvailable}
             stockAvailable={stockAvailable}
             cashRemaining={cashRemaining ? cashRemaining : cashAvailable}
-            stockRemaining={
-              stockRemaining ? stockRemaining : stockAvailable
-            }
+            stockRemaining={stockRemaining ? stockRemaining : stockAvailable}
             agencyData={agencyData}
+            formatDollars={formatDollars}
           />
         )}
-        {activeSection === "Stepthree" && agencyData && <Specialrequest agencyData={agencyData}  />}
-        {activeSection === "Stepfour" && <Stepfour />}
-        {activeSection === "Stepfive" && <Stepfive />}
+        {activeSection === "Stepthree" && agencyData && (
+          <Specialrequest agencyData={agencyData} formatDollars={formatDollars}/>
+        )}
+        {activeSection === "Stepfour" && (
+          <Stepfour
+            bonusData={bonusData}
+            handleOnSaveApi = {handleOnSaveApi}
+            cashAvailable={cashAvailable}
+            stockAvailable={stockAvailable}
+            cashRemaining={cashRemaining ? cashRemaining : cashAvailable}
+            stockRemaining={stockRemaining ? stockRemaining : stockAvailable}
+            agencyData={agencyData}
+            formatDollars={formatDollars}
+          />
+        )}
+        {activeSection === "Stepfive" && <Stepfive 
+        bonusData={bonusData}
+        cashAvailable={cashAvailable}
+        stockAvailable={stockAvailable}
+        cashRemaining={cashRemaining ? cashRemaining : cashAvailable}
+        stockRemaining={stockRemaining ? stockRemaining : stockAvailable}
+        agencyData={agencyData}
+        formatDollars={formatDollars}/>}
       </div>
     </div>
   );

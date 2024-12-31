@@ -6,7 +6,8 @@ import user from '../images/user.svg';
 import { BASE_LOCAL_URL } from "../_constants/constants";
 import { sessionStorageClear } from "../utils/storageHelper";
 import { sessionStorageGet } from "../utils/storageHelper";
-import { useOktaAuth } from '@okta/okta-react';
+import { useOktaAuth  } from '@okta/okta-react';
+
 export default function Header() {
   const [userName, setUserName] = useState('');
   const { authState, oktaAuth} = useOktaAuth();
@@ -15,6 +16,7 @@ export default function Header() {
     const accessToken = oktaAuth.getAccessToken();
     await sessionStorageClear();
     try {//logout from backend
+      if(accessToken){
       const response = await fetch(`${BASE_LOCAL_URL}clearCookie`, {
         
         headers: {
@@ -30,11 +32,15 @@ export default function Header() {
       }else{
         logout();  // logout from Okta
       }
+    }else{
+      console.log("accessToken expried!");
+    }
 
     } catch (error) {
       logout();  // logout from Okta
       console.log(error);
     }
+  
     
    
   }
@@ -46,6 +52,24 @@ export default function Header() {
   }
 
   }, [authState]);
+  useEffect( () => {
+   // Register the session expiration event
+   const sessionExpiredListener = oktaAuth.authStateManager.subscribe( async () => {
+    if (oktaAuth.authState && oktaAuth.authState.isAuthenticated === false) {
+      // Handle session expiration (redirect, logout, etc.)
+      console.log('Session has expired!');
+      await sessionStorageClear();
+      // Example: Redirect to login page or show a custom session expired message
+      window.location.href = '/';
+    }
+  });
+
+  // Clean up listener when the component is unmounted
+  // return () => {
+  //   sessionExpiredListener();
+  // };
+  
+    }, [oktaAuth]);
 
   return (
     <nav className="navbar fixed-top headerWrap">

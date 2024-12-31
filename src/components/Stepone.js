@@ -7,7 +7,7 @@ import sortWhite from "../images/sort-white.svg";
 
 import { useSection } from "../utils/SectionContext";
 import { sessionStorageGet } from "../utils/storageHelper";
-import { NETWORK } from "../_constants/constants";
+import { ENTITY, NETWORK, STAGWELL } from "../_constants/constants";
 import Loader from "./Loader";
 
 const DataTile = ({ image, title, amount, type }) => {
@@ -97,7 +97,7 @@ const Bonusrow = ({ data, handleOnChange, isCashOver, isStockOver, isCashUnder, 
             )}
             {item.submitted ? (
               <span className="statusChip d-flex align-items-center">
-                Stage 1
+                {item.currentStage ? item.currentStage : 'Stage 2'}
               </span>
             ) : (
               ""
@@ -109,7 +109,7 @@ const Bonusrow = ({ data, handleOnChange, isCashOver, isStockOver, isCashUnder, 
   </>
   );
 
-export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver, isCashUnder, isStockUnder, handleOnChange, handleOnSave }) {
+export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver, isCashUnder, isStockUnder, handleOnChange, handleOnSave, formatDollars }) {
   const { showSection } = useSection();
   const [userType, setUserType] = useState('')
   const allSubmitted = Array.isArray(bonusData) && bonusData.length > 0 && bonusData.every(item => item.submitted);
@@ -120,6 +120,9 @@ export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver
       const userType = await sessionStorageGet('userType')
       showSection(activeSection);
       setUserType(userType)
+      if (userType === STAGWELL || userType === NETWORK || userType === ENTITY) {
+        showSection("Steptwo")
+      }
     })();
   }, [showSection]);
 
@@ -135,17 +138,17 @@ export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver
           <DataTile
             image={budget}
             title={"Overall Bonus Pool Budget:"}
-            amount={agencyData?.overallBonusPoolBudget}
+            amount={formatDollars(agencyData?.overallBonusPoolBudget)}
           />
           <DataTile
             image={cash}
             title={"Amount allocated to Cash:"}
-            amount={agencyData?.amountForCash}
+            amount={formatDollars(agencyData?.amountForCash)}
           />
           <DataTile
             image={stock}
             title={"Amount allocated to Stock:"}
-            amount={agencyData?.amountForStock}
+            amount={formatDollars(agencyData?.amountForStock)}
           />
         </div>
       </div>
@@ -204,8 +207,8 @@ export default function Stepone({ agencyData, bonusData, isCashOver, isStockOver
               <div className="d-flex justify-content-end g-10">
                 {userType !== NETWORK && (
                     <button
-                      className={`${isCashOver || isStockOver || !isCashUnder || !isStockUnder || allSubmitted ? "baseBtnDisabled" : "baseBtn"
-                      } d-flex align-items-center justify-content-center`} disabled={isCashOver || isStockOver || !isCashUnder || !isStockUnder || allSubmitted ? true : false}
+                      className={`${isCashOver || isStockOver || isCashUnder || isStockUnder || allSubmitted ? "baseBtnDisabled" : "baseBtn"
+                      } d-flex align-items-center justify-content-center`} disabled={isCashOver || isStockOver || isCashUnder || isStockUnder || allSubmitted ? true : false}
                       onClick={() => handleOnSave()}>
                       Submit
                     </button>

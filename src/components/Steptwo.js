@@ -44,7 +44,7 @@ const allNewOptions = [
   { value: "Agency ID", label: "Agency ID" },
 ];
 
-export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cashRemaining, stockRemaining, agencyData }) {
+export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cashRemaining, stockRemaining, agencyData, formatDollars }) {
   const { showSection } = useSection();
   const [overAllEmployeeList, setOverAllEmployeeList] = useState([]);
   const [reformatedEmployeeData, setReformatedEmployeeData] = useState([]);
@@ -61,11 +61,11 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
   const [showAlert, setShowAlert] = useState(false);
   const [userType, setUserType] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isAllSubmitted, setIsAllSubmitted] = useState(false);
   const allEntites = bonusData?.map((item) => ({
     value: item.entityName,
     label: item.entityName,
   }));
-  
   const { oktaAuth, authState } = useOktaAuth();
 
   // Define default selected options
@@ -80,10 +80,10 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
   const [selectedColumns, setSelectedColumns] = useState(defaultSelectedOptions.map(option => option.value));
 
   const totalData = [
-    { id: 1, title: "Total Cash Available", amount: `$${totalCashAvailable ? totalCashAvailable : cashAvailable ? cashAvailable : 0}` },
-    { id: 2, title: "Total Cash Remaining", amount: `$${remainingCash}` },
-    { id: 3, title: "Total Stock Available", amount: `$${totalStockAvailable ? totalStockAvailable : stockAvailable ? stockAvailable : 0}` },
-    { id: 4, title: "Total Stock Remaining", amount: `$${remainingStock}` },
+    { id: 1, title: "Total Cash Available", amount: `${formatDollars(totalCashAvailable ? totalCashAvailable : cashAvailable ? cashAvailable : 0)}` },
+    { id: 2, title: "Total Cash Remaining", amount: `${formatDollars(remainingCash)}` },
+    { id: 3, title: "Total Stock Available", amount: `${formatDollars(totalStockAvailable ? totalStockAvailable : stockAvailable ? stockAvailable : 0)}` },
+    { id: 4, title: "Total Stock Remaining", amount: `${formatDollars(remainingStock)}` },
   ];
 
   const DataTile = useCallback(({ data, type }) => {
@@ -166,8 +166,8 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
   }, [entityQuery, DataTile, calculateTotalSum]);
 
   useEffect(() => {
-    const accessToken = oktaAuth.getAccessToken();
     const fetchData = async () => {
+      const accessToken = oktaAuth.getAccessToken();
       setIsLoading(true);
       const userType = await sessionStorageGet('userType')
       setUserType(userType)
@@ -209,6 +209,10 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                 employees: entitiesMap[entity],
               })
             );
+            const allSubmitted = employeesPerEntity.every(entity => {
+              return entity.employees.every(employee => employee.submitted);
+            });
+            setIsAllSubmitted(allSubmitted)
             setOverAllEmployeeList(employeesPerEntity);
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -234,17 +238,17 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
         employee.agencyName,
         employee.entity,
         employee.employeeId,
-        employee.baseCompPresent,
-        employee.cashBonusPresent,
-        employee.stockBonusPresent,
-        employee.stockPremiumPresent,
-        employee.totalBonusPresent,
+        formatDollars(employee.baseCompPresent),
+        formatDollars(employee.cashBonusPresent),
+        formatDollars(employee.stockBonusPresent),
+        formatDollars(employee.stockPremiumPresent),
+        formatDollars(employee.totalBonusPresent),
         employee.vesting,
         employee.vestingPremiumPercentage,
-        employee.baseCompPrevious,
-        employee.cashBonusPrevious,
-        employee.stockBonusPrevious,
-        employee.stockPremiumPrevious,
+        formatDollars(employee.baseCompPrevious),
+        formatDollars(employee.cashBonusPrevious),
+        formatDollars(employee.stockBonusPrevious),
+        formatDollars(employee.stockPremiumPrevious),
         employee.year,
         employee.costType,
         employee.retentionCurrentYear,
@@ -371,12 +375,13 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
   };
 
   const handleOnSubmit = async () => {
+    const userType = await sessionStorageGet('userType')
     const accessToken = oktaAuth.getAccessToken();
     try {
       const response = await fetch(`${BASE_LOCAL_URL}employee/save`, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${accessToken}`,  
+          'Authorization': `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         credentials: "include", 
@@ -389,9 +394,10 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
-        {
-          userType != ENTITY && showSection("Stepthree");
-          userType === STAGWELL && showSection("Stepfour");
+        if(userType === STAGWELL || userType === NETWORK) {
+          showSection("Stepfour");
+        } else if (userType === AGENCY) {
+          showSection("Stepthree");
         }
       }, 800);
     } catch (error) {
@@ -400,7 +406,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
   }
 
   return (
-    <div className="container InfoSec">
+    <div className="container-fluid customPadding InfoSec">
       {showAlert && <Success />}
       {isLoading && <Loader />}
       <div className="sectionTitle">
@@ -553,7 +559,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                                     <span>{row.employeeId}</span>
                                   )}
                                   {columnName === "Base Comp" && (
-                                    <span>{row.baseCompPresent}</span>
+                                    <span>{formatDollars(row.baseCompPresent)}</span>
                                   )}
                                   {columnName === "2023 Cash Bonus" && (
                                     <div className="inputBorder d-flex align-items-center">
@@ -573,7 +579,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                                             "cashBonusPresent"
                                           )
                                         }
-                                        disabled={userType === NETWORK}
+                                        disabled={userType === NETWORK || row.submitted }
                                         style={{
                                           backgroundColor:
                                             userType === "ENTITY"
@@ -602,7 +608,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                                             "stockBonusPresent"
                                           )
                                         }
-                                        disabled={userType === NETWORK}
+                                        disabled={userType === NETWORK || row.submitted }
                                         style={{
                                           backgroundColor:
                                             userType === "ENTITY"
@@ -613,10 +619,10 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                                     </div>
                                   )}
                                   {columnName === "2023 Stock Premium" && (
-                                    <span>{row.stockPremiumPresent}</span>
+                                    <span>{formatDollars(row.stockPremiumPresent)}</span>
                                   )}
                                   {columnName === "2023 Total Bonus" && (
-                                    <span>{row.totalBonusPresent}</span>
+                                    <span>{formatDollars(row.totalBonusPresent)}</span>
                                   )}
                                   {columnName === "2023 Vesting" && (
                                     <span>{row.vesting}</span>
@@ -625,16 +631,16 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                                     <span>{row.vestingPremiumPercentage}</span>
                                   )}
                                   {columnName === "2022 Base Comp" && (
-                                    <span>{row.baseCompPrevious}</span>
+                                    <span>{formatDollars(row.baseCompPrevious)}</span>
                                   )}
                                   {columnName === "2022 Cash Bonus" && (
-                                    <span>{row.cashBonusPrevious}</span>
+                                    <span>{formatDollars(row.cashBonusPrevious)}</span>
                                   )}
                                   {columnName === "2022 Stock Bonus" && (
-                                    <span>{row.stockBonusPrevious}</span>
+                                    <span>{formatDollars(row.stockBonusPrevious)}</span>
                                   )}
                                   {columnName === "2022 Stock Premium" && (
-                                    <span>{row.stockPremiumPrevious}</span>
+                                    <span>{formatDollars(row.stockPremiumPrevious)}</span>
                                   )}
                                   {columnName === "Year" && (
                                     <span>{row.year}</span>
@@ -692,25 +698,54 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
                 </table>
               </div>
             </div>
+            <div className="d-flex align-self-center justify-content-center w-100 mt-3">
+                {isAllSubmitted && (
+                  <h6 className="text-success text-center m-0">
+                    Allocation for this stage is completed
+                  </h6>
+                )}
+              </div>
             <div className="d-flex justify-content-end mb-5 mt-3 g-10">
-              <button className="baseBtn d-flex align-items-center justify-content-center">
+              {/* <button className="baseBtn d-flex align-items-center justify-content-center">
                 Save
-              </button>
-              <button
-                className={`${
-                  overAllRemainingCash === 0 && overAllRemainingStock === 0
-                    ? "baseBtn"
-                    : "baseBtnDisabled"
-                } d-flex align-items-center justify-content-center`}
-                onClick={handleOnSubmit}
-                disabled={
-                  overAllRemainingCash === 0 && overAllRemainingStock === 0
-                    ? false
-                    : true
-                }
-              >
-                Submit
-              </button>
+              </button> */}
+              {!isAllSubmitted && (
+                <button
+                  className={`${
+                    overAllRemainingCash >= 0 && overAllRemainingStock >= 0
+                      ? "baseBtn"
+                      : "baseBtnDisabled"
+                  } d-flex align-items-center justify-content-center`}
+                  onClick={handleOnSubmit}
+                  disabled={
+                    overAllRemainingCash >= 0 &&
+                    overAllRemainingStock >= 0 &&
+                    !isAllSubmitted
+                      ? false
+                      : true
+                  }
+                >
+                  Submit
+                </button>
+              )}
+              {isAllSubmitted && (
+                <>
+                  <button
+                    className="baseBtnDisabled d-flex align-items-center justify-content-center"
+                    disabled={true}>
+                    Submit
+                  </button>
+                  <button
+                    className="baseBtn d-flex align-items-center justify-content-center"
+                    onClick={() => { if(userType === STAGWELL || userType === NETWORK) {
+                      showSection("Stepfour");
+                    } else if (userType === AGENCY) {
+                      showSection("Stepthree");
+                    }}}>
+                    Next
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
