@@ -128,53 +128,6 @@ export default function Login() {
      })() */
   }, [navigate])
 
-  const handleLogin = async () => {
-    // validateEmail();
-    // validatePassword();
-
-
-    // debugger;
-    try {
-      const response = await fetch(`${API_BASE_URL}login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          // email: 'allison.clu@allisonpr.com',
-          email: "merrill.raman@stagwellglobal.com",
-          //password: password,
-          //email: userDetail.email_address,
-          password: 'Test@123',
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const result = await response.json();
-      sessionStorageSet('isLoggedIn', true);
-      sessionStorageSet('userType', result.userType)
-      sessionStorageSet('userName', result.userName)
-      console.log("Fetched data:", result);
-      if (result.userType === AGENCY) {
-        sessionStorageSet('activeSection', 'Stepone')
-        navigate(DETAIL_ROUTE, { replace: true });
-      } else if (result.userType === ENTITY) {
-        sessionStorageSet('activeSection', 'Steptwo')
-        navigate(DETAIL_ROUTE, { replace: true });
-      } else if (result.userType === STAGWELL || result.userType === NETWORK) {
-        navigate(DASHBOARD_ROUTE, { replace: true });
-      }
-    } catch (error) {
-
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-
-  };
-
   return <div className="loginWrap d-flex align-items-center justify-content-center">
     {/* <Toast msg={errMsg} /> */}
     
