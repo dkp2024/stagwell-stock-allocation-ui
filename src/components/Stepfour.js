@@ -3,7 +3,7 @@ import Multiselect from "./multiselect/Multiselect";
 import { sessionStorageGet } from "../utils/storageHelper";
 import sortWhite from "../images/sort-white.svg";
 import avatar from "../images/tuser.svg";
-import { STAGWELL, NETWORK, BASE_LOCAL_URL, AGENCY } from "../_constants/constants";
+import { STAGWELL, NETWORK, API_BASE_URL, AGENCY } from "../_constants/constants";
 import { useSection } from "../utils/SectionContext";
 import Loader from "./Loader";
 import download from "../images/download.svg";
@@ -100,7 +100,7 @@ export default function Stepfour({
         try {
           const agencyId = agencyDetails.filter((agency) => agencyQuery.includes(agency.agencyName))
           console.log(agencyId);
-          const response = await fetch(`${BASE_LOCAL_URL}sr/list?agency_id=${agencyId[0].id}`, {
+          const response = await fetch(`${API_BASE_URL}sr/list?agency_id=${agencyId[0].id}`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,  
               'Content-Type': 'application/json'
@@ -234,7 +234,7 @@ export default function Stepfour({
             return temp.push({id: item.agencyId, agencyName: item.agencyName})
           })
           setAgencyDetails(temp)
-          const response = await fetch(`${BASE_LOCAL_URL}employee/list`, {
+          const response = await fetch(`${API_BASE_URL}employee/list`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,  
               'Content-Type': 'application/json'
@@ -345,7 +345,7 @@ export default function Stepfour({
     const accessToken = oktaAuth.getAccessToken();
 
     try {
-      const response = await fetch(`${BASE_LOCAL_URL}employee/save`, {
+      const response = await fetch(`${API_BASE_URL}employee/save`, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -463,7 +463,7 @@ export default function Stepfour({
         approvedStockBonus: specialRequest.additionalStockBonusRequest,
         approvalStatus: "Approved",
       };
-      const response = await fetch(`${BASE_LOCAL_URL}sr/approve`, {
+      const response = await fetch(`${API_BASE_URL}sr/approve`, {
         credentials: "include",
         method: "post",
         body: JSON.stringify(approvedRequest),

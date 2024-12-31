@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../images/logo.svg";
 import { Link } from "react-router-dom";
-import { AGENCY, BASE_LOCAL_URL, DASHBOARD_ROUTE, DETAIL_ROUTE, ENTITY, NETWORK, STAGWELL } from "../_constants/constants";
+import { AGENCY, API_BASE_URL, DASHBOARD_ROUTE, DETAIL_ROUTE, ENTITY, NETWORK, STAGWELL } from "../_constants/constants";
 import { executeHttpCall } from "../utils/Http";
 import { sessionStorageSet } from "../utils/storageHelper";
 import Loader from "../components/Loader";
@@ -13,8 +13,6 @@ import { useOktaAuth } from '@okta/okta-react';
 //import { Navigate } from 'react-router-dom';
 
 export default function Login() {
-  const apiUrl = process.env;
- console.log("API URL: ", apiUrl); 
   const { oktaAuth, authState } = useOktaAuth();
   const login = async () => oktaAuth.signInWithRedirect();
   const navigate = useNavigate();
@@ -137,7 +135,7 @@ export default function Login() {
 
     // debugger;
     try {
-      const response = await fetch(`${BASE_LOCAL_URL}login`, {
+      const response = await fetch(`${API_BASE_URL}login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

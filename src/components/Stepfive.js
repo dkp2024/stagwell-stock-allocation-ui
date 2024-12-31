@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import Multiselect from "../components/multiselect/Multiselect";
 import { sessionStorageGet } from "../utils/storageHelper";
-import { BASE_LOCAL_URL, AGENCY } from "../_constants/constants";
+import { API_BASE_URL, AGENCY } from "../_constants/constants";
 import sortWhite from "../images/sort-white.svg";
 import avatar from "../images/tuser.svg";
 import Loader from "./Loader";
@@ -230,7 +230,7 @@ export default function Stepfive({
           setEntityQuery(entities);
           const agencies = bonusData.map((item) => item.agencyName);
           setAgencyQuery(agencies);
-          const response = await fetch(`${BASE_LOCAL_URL}employee/list`, {
+          const response = await fetch(`${API_BASE_URL}employee/list`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,  
               'Content-Type': 'application/json'

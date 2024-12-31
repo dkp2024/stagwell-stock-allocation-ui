@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { sessionStorageGet } from "../utils/storageHelper";
 import sortWhite from '../images/sort-white.svg';
 import filter from '../images/filter.svg';
-import { AGENCY, BASE_LOCAL_URL, DETAIL_ROUTE, ENTITY } from '../_constants/constants';
+import { AGENCY, API_BASE_URL, DETAIL_ROUTE, ENTITY } from '../_constants/constants';
 import { sessionStorageSet } from '../utils/storageHelper';
 import { LOGIN_ROUTE } from '../_constants/constants';
 import { useOktaAuth } from '@okta/okta-react';
@@ -68,7 +68,7 @@ const Dashboard = () => {
         // navigate(DETAIL_ROUTE, {replace: true});
       if(isLoggedIn && userType !== ENTITY && userType !== AGENCY) {
         try {
-          const response = await fetch(`${BASE_LOCAL_URL}entity/list`, {
+          const response = await fetch(`${API_BASE_URL}entity/list`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`,  
               'Content-Type': 'application/json'

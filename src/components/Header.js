@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import logo from '../images/logo.svg';
 import mail from '../images/mail.svg';
 import user from '../images/user.svg';
-import { BASE_LOCAL_URL } from "../_constants/constants";
+import { API_BASE_URL } from "../_constants/constants";
 import { sessionStorageClear } from "../utils/storageHelper";
 import { sessionStorageGet } from "../utils/storageHelper";
 import { useOktaAuth  } from '@okta/okta-react';
@@ -17,7 +17,7 @@ export default function Header() {
     await sessionStorageClear();
     try {//logout from backend
       if(accessToken){
-      const response = await fetch(`${BASE_LOCAL_URL}clearCookie`, {
+      const response = await fetch(`${API_BASE_URL}clearCookie`, {
         
         headers: {
           'Authorization': `Bearer ${accessToken}`,  

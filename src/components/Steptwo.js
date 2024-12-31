@@ -6,7 +6,7 @@ import sortWhite from "../images/sort-white.svg";
 import download from "../images/download.svg";
 import avatar from "../images/tuser.svg";
 import { useSection } from "../utils/SectionContext";
-import { AGENCY, BASE_LOCAL_URL, ENTITY, NETWORK, STAGWELL } from "../_constants/constants";
+import { AGENCY, API_BASE_URL, ENTITY, NETWORK, STAGWELL } from "../_constants/constants";
 import { sessionStorageGet } from "../utils/storageHelper";
 import Success from "../pages/Success";
 import Loader from "./Loader";
@@ -177,7 +177,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
             setEntityQuery(entities);
             const agencies = bonusData.map((item) => item.agencyName);
             setAgencyQuery(agencies)
-            const response = await fetch(`${BASE_LOCAL_URL}employee/list`, {
+            const response = await fetch(`${API_BASE_URL}employee/list`, {
               headers: {
                 'Authorization': `Bearer ${accessToken}`,  
                 'Content-Type': 'application/json'
@@ -378,7 +378,7 @@ export default function Steptwo({ bonusData, cashAvailable, stockAvailable, cash
     const userType = await sessionStorageGet('userType')
     const accessToken = oktaAuth.getAccessToken();
     try {
-      const response = await fetch(`${BASE_LOCAL_URL}employee/save`, {
+      const response = await fetch(`${API_BASE_URL}employee/save`, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${accessToken}`,

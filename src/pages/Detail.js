@@ -7,7 +7,7 @@ import Stepthree from "../components/Stepthree";
 import Stepfour from "../components/Stepfour";
 import { useSection } from "../utils/SectionContext";
 import Specialrequest from "../components/Specialrequest";
-import { AGENCY, BASE_LOCAL_URL , ENTITY, LOGIN_ROUTE, NETWORK, STAGWELL} from "../_constants/constants";
+import { AGENCY, API_BASE_URL , ENTITY, LOGIN_ROUTE, NETWORK, STAGWELL} from "../_constants/constants";
 import { sessionStorageGet } from "../utils/storageHelper";
 import Stepfive from "../components/Stepfive";
 import { useOktaAuth } from '@okta/okta-react';
@@ -39,7 +39,7 @@ export default function Detail() {
         if (isLoggedIn) {
           try {
             const response = await fetch(
-              `${BASE_LOCAL_URL}agency/list`,
+              `${API_BASE_URL}agency/list`,
               { 
                 headers: {
                   'Authorization': `Bearer ${accessToken}`,  
@@ -106,7 +106,7 @@ export default function Detail() {
               }
               try {
                 const bonusResponse = await fetch(
-                  `${BASE_LOCAL_URL}entity/list`,
+                  `${API_BASE_URL}entity/list`,
                   { 
                     headers: {
                       'Authorization': `Bearer ${accessToken}`,  
@@ -174,7 +174,7 @@ export default function Detail() {
       //showSection("Steptwo")
     }
     try {
-      const response = await fetch(`${BASE_LOCAL_URL}entity/save`, {
+      const response = await fetch(`${API_BASE_URL}entity/save`, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${accessToken}`,  
@@ -201,7 +201,7 @@ export default function Detail() {
     const accessToken = oktaAuth.getAccessToken();
     try {
       const bonusResponse = await fetch(
-        `${BASE_LOCAL_URL}entity/list`,
+        `${API_BASE_URL}entity/list`,
         { 
           headers: {
             'Authorization': `Bearer ${accessToken}`,  

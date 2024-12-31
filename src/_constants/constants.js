@@ -15,6 +15,7 @@ export const AGENCY = 'AGENCY';
 export const ENTITY = 'ENTITY';
 export const STAGWELL = 'STAGWELL';
 export const NETWORK = 'NETWORK';
-
+const env = process.env;
+console.log("APP ENV: ", env); 
 //api constants
-export const BASE_LOCAL_URL = 'http://localhost:8081/stagwell/'
+export const API_BASE_URL =  process.env.NODE_ENV==='production'?'http://localhost:8081/stagwell/':'http://localhost:8081/stagwell/'

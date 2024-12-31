@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BASE_LOCAL_URL } from "../_constants/constants";
+import { API_BASE_URL } from "../_constants/constants";
 import { sessionStorageGet } from "../utils/storageHelper";
 import Success from "../pages/Success";
 
@@ -43,7 +43,7 @@ const Specialrequest = ({ agencyData, formatDollars }) => {
       createdBy: userName,
       updatedDate: "2019-01-06T18:30:00.000+00:00",
     });
-    const response = await fetch(`${BASE_LOCAL_URL}sr/save`, {
+    const response = await fetch(`${API_BASE_URL}sr/save`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,  
         'Content-Type': 'application/json'
